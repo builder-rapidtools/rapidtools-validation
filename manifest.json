@@ -1,6 +1,7 @@
 {
   "service": "RapidTools Validation API",
   "version": "1.0",
+  "catalog_repo_url": "https://github.com/builder-rapidtools/rapidtools-validation"
   "description": "API-first validation service for structured data formats with deterministic validation, idempotent operations, and edge-deployed performance.",
   "canonical_manifest_url": "https://validation.rapidtools.dev/manifest.json",
   "category": ["validation", "data-quality", "api"],
