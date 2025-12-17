@@ -1,9 +1,13 @@
 {
   "service": "RapidTools Validation API",
   "version": "1.0",
-  "catalog_repo_url": "https://github.com/builder-rapidtools/rapidtools-validation",
+  "schema_version": "1.0",
+  "last_updated": "2024-12-17",
+  "base_url": "https://rapidtools-validation-api.jamesredwards89.workers.dev",
+  "manifest_url": "https://validation.rapidtools.dev/manifest.json",
+  "documentation_url": "https://github.com/builder-rapidtools/rapidtools-validation",
+  "status": "limited_testing",
   "description": "API-first validation service for structured data formats with deterministic validation, idempotent operations, and edge-deployed performance.",
-  "canonical_manifest_url": "https://validation.rapidtools.dev/manifest.json",
   "category": ["validation", "data-quality", "api"],
   "provider": {
     "name": "RapidTools",
@@ -15,7 +19,9 @@
       {
         "type": "text/csv",
         "description": "CSV timeseries data (currently GA4 format)",
-        "encoding": ["text", "base64"]
+        "encoding": ["text", "base64"],
+        "required_headers": ["date", "sessions", "users"],
+        "optional_headers": ["pageviews"]
       }
     ],
     "outputs": [
@@ -39,15 +45,87 @@
   },
   "authentication": {
     "method": "API key",
-    "header": "x-api-key"
+    "header": "x-api-key",
+    "scope": "per_key"
+  },
+  "limits": {
+    "rate_limits": {
+      "requests_per_minute": 120,
+      "requests_per_hour": 5000,
+      "notes": "Per API key. Validation-only operations have higher limits than data persistence services."
+    },
+    "payload_limits": {
+      "csv_max_bytes": 5242880,
+      "csv_max_rows": 100000,
+      "notes": "CSV input: 5MB max (text or base64). Maximum 100k rows."
+    }
   },
   "idempotency": {
+    "supported": true,
     "header": "Idempotency-Key",
     "ttl": "24h",
     "conflict_status": 409,
     "conflict_code": "IDEMPOTENCY_KEY_REUSE_MISMATCH",
-    "fingerprint_algorithm": "sha256(type + sha256(content) + stableStringify(options) + stableStringify(context))"
+    "fingerprint_algorithm": "sha256(type + sha256(content) + stableStringify(options) + stableStringify(context))",
+    "notes": "Idempotency prevents duplicate validation execution. Cached results returned for 24h."
   },
+  "errors": {
+    "format": "application/json",
+    "structure": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "findings": ["array (validation errors only)"]
+    },
+    "codes": [
+      "UNAUTHORIZED",
+      "MISSING_TYPE",
+      "MISSING_CONTENT",
+      "UNSUPPORTED_TYPE",
+      "VALIDATION_FAILED",
+      "INVALID_CONTENT_ENCODING",
+      "IDEMPOTENCY_KEY_REUSE_MISMATCH",
+      "INTERNAL_ERROR"
+    ],
+    "validation_finding_codes": [
+      "EMPTY_CSV",
+      "MISSING_REQUIRED_HEADERS",
+      "INVALID_ROW_FORMAT",
+      "INVALID_DATE_FORMAT",
+      "DUPLICATE_DATE",
+      "INVALID_SESSIONS_VALUE",
+      "INVALID_USERS_VALUE",
+      "INVALID_PAGEVIEWS_VALUE",
+      "NOT_SORTED_BY_DATE",
+      "MAX_ROWS_EXCEEDED",
+      "MISSING_OPTIONAL_HEADER"
+    ],
+    "retryable_codes": [
+      "INTERNAL_ERROR"
+    ]
+  },
+  "stability": {
+    "level": "beta",
+    "breaking_changes_policy": "Announced 30 days in advance via email to registered API key holders.",
+    "deprecation_window": "90 days minimum",
+    "backwards_compatibility": "Validation types maintain contract. New types added without breaking existing."
+  },
+  "versioning": {
+    "scheme": "type_versioning",
+    "current": "v1",
+    "format": "Validation types versioned independently (e.g., csv.timeseries.ga4.v1). API endpoints remain stable.",
+    "changelog_url": "https://github.com/builder-rapidtools/rapidtools-validation/releases"
+  },
+  "non_goals": [
+    "Data storage or persistence beyond idempotency cache",
+    "Data transformation or correction (validation only)",
+    "Direct file upload (API receives text/base64 payloads)",
+    "Real-time streaming validation",
+    "Custom validation rule creation",
+    "Data analytics or aggregation"
+  ],
   "pricing": {
     "model": "usage-based",
     "currency": "GBP",
@@ -68,5 +146,10 @@
     "health": "/health",
     "types": "/api/types",
     "validate": "/api/validate"
+  },
+  "runtime": {
+    "platform": "cloudflare_workers",
+    "language": "typescript",
+    "framework": "itty-router"
   }
 }
