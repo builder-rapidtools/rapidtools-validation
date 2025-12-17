@@ -51,12 +51,12 @@
     "rate_limits": {
       "requests_per_minute": 120,
       "burst": 20,
-      "enforced": true
+      "enforced": false
     },
     "payload_limits": {
       "max_bytes": 5242880,
       "max_rows": 100000,
-      "enforced": true
+      "enforced": false
     }
   },
   "idempotency": {
