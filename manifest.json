@@ -111,9 +111,8 @@
     ]
   },
   "stability": {
-    "level": "beta",
-    "backward_compatibility": "Validation types maintain contract; new types added without breaking existing",
-    "breaking_change_policy": "Announced 30 days in advance via email to registered API key holders"
+    "level": "stable",
+    "breaking_change_policy": "versioned_manifest"
   },
   "versioning": {
     "api": "v1",
