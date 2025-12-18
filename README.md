@@ -1,5 +1,7 @@
 # RapidTools Validation
 
+![Contract Tests](https://github.com/builder-rapidtools/rapidtools-validation/actions/workflows/contract-tests.yml/badge.svg)
+
 API-first validation service for structured data formats with deterministic validation, idempotent operations, and edge-deployed performance.
 
 ## What it does
