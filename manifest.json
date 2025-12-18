@@ -91,6 +91,7 @@
       "VALIDATION_FAILED",
       "INVALID_CONTENT_ENCODING",
       "IDEMPOTENCY_KEY_REUSE_MISMATCH",
+      "NOT_FOUND",
       "INTERNAL_ERROR"
     ],
     "validation_finding_codes": [
