@@ -1,6 +1,13 @@
 {
   "service": "RapidTools Validation API",
   "version": "1.0",
+  "non_goals": [
+    "data storage",
+    "data transformation",
+    "report generation",
+    "schema inference",
+    "real-time streaming"
+  ],
   "schema_version": "1.0",
   "last_updated": "2025-12-17",
   "base_url": "https://validation-api.rapidtools.dev",
